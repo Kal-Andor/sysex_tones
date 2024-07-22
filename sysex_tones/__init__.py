@@ -20,7 +20,7 @@ from sysex_tones.BasicIO import BasicIO
 
 import os as _os
 import time as _time
-import fcntl as _fcntl
+import msvcrt
 import select as _select
 import collections as _collections
 
@@ -174,8 +174,9 @@ def open_input_stream( filename ):
 	retval = None
 	if _os.path.exists( filename ) and _os.access( filename, _os.R_OK ):
 		retval = open( filename, 'rb', 0 )
-		flags = _fcntl.fcntl( retval, _fcntl.F_GETFL ) | _os.O_NONBLOCK
-		_fcntl.fcntl( retval, _fcntl.F_SETFL, flags )
+		msvcrt.setmode( retval.fileno(), _os.O_BINARY)
+		if hasattr(_os, 'set_blocking'):
+			_os.set_blocking(retval.fileno(), False)
 	return retval
 
 
